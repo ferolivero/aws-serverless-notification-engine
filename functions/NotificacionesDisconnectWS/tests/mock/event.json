@@ -1,0 +1,44 @@
+{
+  "headers": {
+    "Host": "8etvdzlffi.execute-api.us-east-1.amazonaws.com"
+  },
+  "multiValueHeaders": {
+    "Host": ["8etvdzlffi.execute-api.us-east-1.amazonaws.com"]
+  },
+  "requestContext": {
+    "authorizer": {
+      "credentials": "{\"topic\":\"ATC\",\"groups\":[\"atc\"],\"keyId\":\"FC8B5DC55991F3CEA653EB8D344B1941A408E0DFBF2000D44090466BB03CA34D\",\"roles\":[\"anonimo_atc\"],\"userId\":\"anonimo_atc\",\"currentStatus\":\"active\",\"tenantId\":\"tenant1\",\"expiration_date_utc\":\"2100/12/31T23:59:59+0000\",\"applicationId\":[\"anonimo_atc\"],\"factors\":{\"sourceIp\":{\"NotIpAddress\":\"2.3.3.3/12\",\"IpAddress\":\"190.221.0.0/16\"}},\"usageIdentifierKey\":\"FC8B5DC55991F3CEA653EB8D344B1941A408E0DFBF2000D44090466BB03CA34D\",\"username\":\"anonimo_atc\",\"tenant\":\"tenant1\"}",
+      "principalId": "anonimo_atc",
+      "integrationLatency": 2314,
+      "protocols": "[{\"resource\":\"anonimo_atc:/atc\",\"actions\":[\"GET\"],\"effect\":\"allow\"}]"
+    },
+    "routeKey": "$disconnect",
+    "messageId": null,
+    "eventType": "DISCONNECT",
+    "extendedRequestId": "d8zmLEryIAMF7nA=",
+    "requestTime": "05/Aug/2019:13:45:24 +0000",
+    "messageDirection": "IN",
+    "stage": "predev",
+    "connectedAt": 1565012722980,
+    "requestTimeEpoch": 1565012724375,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "cognitoIdentityId": null,
+      "principalOrgId": null,
+      "cognitoAuthenticationType": null,
+      "userArn": null,
+      "userAgent": null,
+      "accountId": null,
+      "caller": null,
+      "sourceIp": "190.221.178.178",
+      "accessKey": null,
+      "cognitoAuthenticationProvider": null,
+      "user": null
+    },
+    "requestId": "d8zmLEryIAMF7nA=",
+    "domainName": "8etvdzlffi.execute-api.us-east-1.amazonaws.com",
+    "connectionId": "d8zl9cwNIAMCKxQ=",
+    "apiId": "8etvdzlffi"
+  },
+  "isBase64Encoded": false
+}

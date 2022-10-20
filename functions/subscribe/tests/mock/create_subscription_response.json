@@ -1,0 +1,10 @@
+{
+    "Attributes": {
+        "subscriptionArn": null,
+        "protocol#event#endpoint#filter": "fcm#LICENCIAS#c3BbwOiLMdY:APA91bFs7aJOFOWTGERpwCaIg86--uC8pJrFVh5Ov0sSHAA7FTbhWkWvXh_8CYfePW5wHZc7LUEj4J0BCCWk6gTKIXruTvUVrjnFAP8HTBG-tZDJ24FTFrI7WDhkdLpri4y_Iqb-E7Y4",
+        "createdAt": "2019-03-22T14:13:53.966Z",
+        "platformEndpointArn": "arn:aws:sns:us-east-1:215575508054:endpoint/GCM/HCC_Licencias_Dev/7b99fc2e-255a-331b-9699-e68cf695e5b7",
+        "endpoint": "c3BbwOiLMdY:APA91bFs7aJOFOWTGERpwCaIg86--uC8pJrFVh5Ov0sSHAA7FTbhWkWvXh_8CYfePW5wHZc7LUEj4J0BCCWk6gTKIXruTvUVrjnFAP8HTBG-tZDJ24FTFrI7WDhkdLpri4y_Iqb-E7Y4",
+        "subscriptorId": "hcc#agente1@hcc.care"
+    }
+}

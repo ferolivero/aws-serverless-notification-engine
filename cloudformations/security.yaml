@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  MOTOR DE NOTIFICACIONES
+
+Parameters:
+  Environment:
+    Type: String
+  Proyecto:
+    Type: String
+
+Resources:
+  AuthorizerRolePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "lambda:InvokeFunction"
+              - "lambda:InvokeAsync"
+              - "lambda:GetFunction"
+            Resource:
+              - !Join [
+                  "",
+                  ["arn:aws:lambda:*:*:function:", !Ref Environment, "*"],
+                ]
+          - Effect: "Allow"
+            Action:
+              - "apigateway:*"
+            Resource:
+              - "*"
+
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: '/'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+        - !Ref AuthorizerRolePolicy
+      Policies:
+        -
+          PolicyName: "Logs"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            -
+              Effect: "Allow"
+              Action:
+                - xray:PutTelemetryRecords
+                - xray:PutTraceSegments
+              Resource: "*"
+        -
+          PolicyName: "AccesTables"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:*"
+                Resource:
+                  - "*"
+        -
+          PolicyName: "AccesApi"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "execute-api:*"
+                Resource:
+                  - "*"
+        -
+          PolicyName: "PutEvents"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "events:Put*"
+                Resource:
+                  - "*"
+      RoleName: !Join ["-", [!Ref Environment, 'MotorNotificaciones']]
+
+Outputs:
+  Rol:
+    Description: Rol Motor de Notificaciones
+    Value: !GetAtt Role.Arn
+    Export:
+      Name: !Join ["-", [!Ref Environment, 'MotorNotificacionesRole']]

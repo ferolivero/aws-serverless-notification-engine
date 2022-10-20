@@ -1,0 +1,124 @@
+{
+    "resource": "/subscribe",
+    "path": "/subscriptions/subscribe",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip",
+        "Authorization": "Bearer eyJraWQiOiIwVjVyZ2hnQWJNRXJ1cHY3QTFxK2FHclR5SlgxWVNpVzRTNzBPTStRWjVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyNjdjNWVlMS1mMjNkLTQ0MjMtODAwNi0wYzVmNDEyYWYzYmYiLCJhdWQiOiIybzRoNDIxZGlzbWZlODZyM2tsNmpzZWN1byIsImNvZ25pdG86Z3JvdXBzIjpbIkFHRU5URSJdLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXZlbnRfaWQiOiJlYWZmNWJlNS00YTdhLTExZTktYmI0Yy00NTI5YjJmZmYyZWEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTU1MzAyMjc0MCwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfaVhma0NvaG1qIiwiY29nbml0bzp1c2VybmFtZSI6ImFnZW50ZTFAaGNjLmNhcmUiLCJleHAiOjE1NTMyNjY4OTMsImlhdCI6MTU1MzI2MzI5MywiZW1haWwiOiJhZ2VudGUxQGhjYy5jYXJlIn0.iW_U0Hn3v3CDAgNkbdZPW6RvKn2ZORen7qAuKUNE1hetQ8nLOzCJGEhQSWmpk3IWlJVK0MOvlgKaHw17K6kU6jOTBMIArOx4MfaMspe-uQz-bKRIqklT5iTjQZnwDsEUKSkqW4IxfRCocqRU55pbsEhkE485Hd9DAVXfg8T8pUVXdNeKZoWaitP-dWRsZciMU5PpY4ibrvkVdktdMkoLhEj607GbtbXa6nmiYXb3DNctiJNIFmErPIyvd2VMdzwMZ3pLw51LGDSrsFcXtvNXSHI4IHZAqPwt3_6j4O4BRB45oi_O_xJiDvhUzuz_tVwdt62levY49P5HN5O18pTCvA",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "AR",
+        "content-type": "application/json;charset=utf-8",
+        "Host": "dev-api.hcc.care",
+        "User-Agent": "okhttp/3.6.0",
+        "Via": "2.0 ef634736195a7d00a4d1ded54e9f55fa.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "wNpuXzTEO_dM2OyDgtRyCmEoDxnUKGHecN9oC6a8js_6b4RJHnJsVg==",
+        "X-Amzn-Trace-Id": "Root=1-5c94eaf6-e798a05b7bd9e5a103bbdb38",
+        "X-Forwarded-For": "186.139.251.156, 205.251.221.110",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": [
+            "application/json, text/plain, */*"
+        ],
+        "Accept-Encoding": [
+            "gzip"
+        ],
+        "Authorization": [
+            "Bearer eyJraWQiOiIwVjVyZ2hnQWJNRXJ1cHY3QTFxK2FHclR5SlgxWVNpVzRTNzBPTStRWjVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyNjdjNWVlMS1mMjNkLTQ0MjMtODAwNi0wYzVmNDEyYWYzYmYiLCJhdWQiOiIybzRoNDIxZGlzbWZlODZyM2tsNmpzZWN1byIsImNvZ25pdG86Z3JvdXBzIjpbIkFHRU5URSJdLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXZlbnRfaWQiOiJlYWZmNWJlNS00YTdhLTExZTktYmI0Yy00NTI5YjJmZmYyZWEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTU1MzAyMjc0MCwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfaVhma0NvaG1qIiwiY29nbml0bzp1c2VybmFtZSI6ImFnZW50ZTFAaGNjLmNhcmUiLCJleHAiOjE1NTMyNjY4OTMsImlhdCI6MTU1MzI2MzI5MywiZW1haWwiOiJhZ2VudGUxQGhjYy5jYXJlIn0.iW_U0Hn3v3CDAgNkbdZPW6RvKn2ZORen7qAuKUNE1hetQ8nLOzCJGEhQSWmpk3IWlJVK0MOvlgKaHw17K6kU6jOTBMIArOx4MfaMspe-uQz-bKRIqklT5iTjQZnwDsEUKSkqW4IxfRCocqRU55pbsEhkE485Hd9DAVXfg8T8pUVXdNeKZoWaitP-dWRsZciMU5PpY4ibrvkVdktdMkoLhEj607GbtbXa6nmiYXb3DNctiJNIFmErPIyvd2VMdzwMZ3pLw51LGDSrsFcXtvNXSHI4IHZAqPwt3_6j4O4BRB45oi_O_xJiDvhUzuz_tVwdt62levY49P5HN5O18pTCvA"
+        ],
+        "CloudFront-Forwarded-Proto": [
+            "https"
+        ],
+        "CloudFront-Is-Desktop-Viewer": [
+            "true"
+        ],
+        "CloudFront-Is-Mobile-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-SmartTV-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-Tablet-Viewer": [
+            "false"
+        ],
+        "CloudFront-Viewer-Country": [
+            "AR"
+        ],
+        "content-type": [
+            "application/json;charset=utf-8"
+        ],
+        "Host": [
+            "dev-api.hcc.care"
+        ],
+        "User-Agent": [
+            "okhttp/3.6.0"
+        ],
+        "Via": [
+            "2.0 ef634736195a7d00a4d1ded54e9f55fa.cloudfront.net (CloudFront)"
+        ],
+        "X-Amz-Cf-Id": [
+            "wNpuXzTEO_dM2OyDgtRyCmEoDxnUKGHecN9oC6a8js_6b4RJHnJsVg=="
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5c94eaf6-e798a05b7bd9e5a103bbdb38"
+        ],
+        "X-Forwarded-For": [
+            "186.139.251.156, 205.251.221.110"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": {
+        "Environment": "messageHubDev"
+    },
+    "requestContext": {
+        "resourceId": "ux8qfb",
+        "authorizer": {
+            "credentials": "{\"username\":\"agente1@hcc.care\",\"roles\":[\"AGENTE\"],\"groups\":[\"AGENTE1\"],\"tenant\":\"hcc\"}",
+            "principalId": "agente1@hcc.care",
+            "integrationLatency": 450,
+            "protocols": "[{\"resource\":\"subscriptions:/subscribe\",\"actions\":[\"GET\",\"POST\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"api_user_profile_information:/userProfileInformation\",\"actions\":[\"GET\",\"POST\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"api_user_profile_information:/userProfileInformation/*\",\"actions\":[\"PUT\",\"GET\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"api_legajos:/legajos\",\"actions\":[\"GET\",\"POST\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"open_api:/accounts/*\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"open_api:/branches/*\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"open_api:/branches\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"open_api:/customers/*\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/config/.me\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/attachments/search\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/circuits/.me\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/status\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/status\",\"actions\":[\"POST\"],\"effect\":\"deny\"},{\"resource\":\"circuit_engine:/attachments/*/*/*\",\"actions\":[\"POST\"],\"effect\":\"allow\"},{\"conditions\":[{\"ForAnyValue:StringEquals\":{\"createdByGroup\":\"AM\",\"assignedToGroup\":\"AM\"}}],\"resource\":\"circuit_engine:/circuits/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"views\":{\"view1\":{\"fields\":{\"creditCard\":\"#mask\",\"circuitId\":false,\"attachments\":true},\"default\":true}},\"effect\":\"allow\",\"factors\":{\"sourceIp\":{\"NotIpAddress\":\"2.3.3.3/12\",\"IpAddress\":\"200.0.0.2/14\"},\"mfa\":{\"require\":true}}},{\"conditions\":[{\"ForAnyValue:StringEquals\":{\"createdByGroup\":\"AM\",\"assignedToGroup\":\"AM\"}}],\"resource\":\"circuit_engine:/circuits\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"views\":{\"view1\":{\"fields\":{\"creditCard\":\"#mask\",\"circuitId\":false,\"attachments\":true},\"default\":true}},\"effect\":\"allow\",\"factors\":{\"sourceIp\":{\"NotIpAddress\":\"2.3.3.3/12\",\"IpAddress\":\"200.0.0.2/14\"},\"mfa\":{\"require\":true}}},{\"resource\":\"circuit_engine:/tasks/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\"},{\"conditions\":[{\"ForAnyValue:StringEquals\":{\"createdByGroup\":\"AM\",\"assignedToGroup\":\"AM\"}}],\"resource\":\"circuit_engine:/tasks\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"views\":{\"view1\":{\"fields\":{\"creditCard\":\"#mask\",\"circuitId\":false,\"attachments\":true},\"default\":true}},\"effect\":\"allow\",\"factors\":{\"sourceIp\":{\"NotIpAddress\":\"2.3.3.3/12\",\"IpAddress\":\"200.0.0.2/14\"},\"mfa\":{\"require\":true}}},{\"resource\":\"circuit_engine:/task_definitions/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\"},{\"conditions\":[{\"ForAnyValue:StringEquals\":{\"createdByGroup\":\"AM\",\"assignedToGroup\":\"AM\"}}],\"resource\":\"circuit_engine:/circuit_definitions/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"views\":{},\"effect\":\"allow\"}]"
+        },
+        "resourcePath": "/subscribe",
+        "httpMethod": "POST",
+        "extendedRequestId": "W8mmgECdoAMFb7A=",
+        "requestTime": "22/Mar/2019:14:02:30 +0000",
+        "path": "/subscriptions/subscribe",
+        "accountId": "215575508054",
+        "protocol": "HTTP/1.1",
+        "stage": "Prod",
+        "domainPrefix": "dev-api",
+        "requestTimeEpoch": 1553263350493,
+        "requestId": "21fe19ba-4cab-11e9-9158-9160761fb724",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "186.139.251.156",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "okhttp/3.6.0",
+            "user": null
+        },
+        "domainName": "dev-api.hcc.care",
+        "apiId": "apojmsd204"
+    },
+    "body": "{\"channel\":\"fcm-expo\",\"topic\":\"LICENCIAS\",\"endpoint\":\"c3BbwOiLMdY:APA91bFs7aJOFOWTGERpwCaIg86--uC8pJrFVh5Ov0sSHAA7FTbhWkWvXh_8CYfePW5wHZc7LUEj4J0BCCWk6gTKIXruTvUVrjnFAP8HTBG-tZDJ24FTFrI7WDhkdLpri4y_Iqb-E7Y4\"}",
+    "isBase64Encoded": false
+}

@@ -1,0 +1,660 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  MOTOR DE NOTIFICACIONES
+
+Parameters:
+  UUID:
+    Type: String
+  Environment:
+    Type: String
+  DeployBucket:
+    Type: String
+  StackName:
+    Type: String
+  BasePath:
+    Type: String
+    Default: 'notify'
+  BasePathWithAuth:
+    Type: String
+    Default: 'private_notify'
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Handler: app.handler
+    Environment:
+      Variables:
+        Environment: 
+          Ref: Environment
+
+Resources:
+
+  SubscribersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Join:
+          - ""
+          - - Ref: Environment
+            - "Subscribers"
+      AttributeDefinitions:
+        - AttributeName: "subscriberId"
+          AttributeType: "S"
+        - AttributeName: "typeSubscriber"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "subscriberId"
+          KeyType: "HASH"
+        - AttributeName: "typeSubscriber"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  SubscriptionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Join:
+          - ""
+          - - Ref: Environment
+            - "Subscriptions"
+      AttributeDefinitions:
+        - AttributeName: "subscriberId"
+          AttributeType: "S"
+        - AttributeName: "topic#channel"
+          AttributeType: "S"
+        - AttributeName: "endpoint"
+          AttributeType: "S"
+        - AttributeName: "proceso"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "subscriberId"
+          KeyType: "HASH"
+        - AttributeName: "topic#channel"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "endpoint"
+          KeySchema:
+            - AttributeName: "endpoint"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
+        -
+          IndexName: "procesoIndex"
+          KeySchema:
+            - AttributeName: "proceso"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
+
+  # TopicsTable:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     TableName:
+  #       Fn::Join:
+  #         - ""
+  #         - - Ref: Environment
+  #           - "Topics"
+  #     AttributeDefinitions:
+  #       - AttributeName: "publisherId"
+  #         AttributeType: "S"
+  #       - AttributeName: "topicId"
+  #         AttributeType: "S"
+  #     KeySchema:
+  #       - AttributeName: "publisherId"
+  #         KeyType: "HASH"
+  #       - AttributeName: "topicId"
+  #         KeyType: "RANGE"
+  #     ProvisionedThroughput:
+  #       ReadCapacityUnits: 2
+  #       WriteCapacityUnits: 2
+
+  PushMessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Join:
+          - ""
+          - - Ref: Environment
+            - "PushMessages"
+      AttributeDefinitions:
+        - AttributeName: "messageId"
+          AttributeType: "S"
+        - AttributeName: "topic#proceso"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "messageId"
+          KeyType: "HASH"
+        - AttributeName: "topic#proceso"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      TimeToLiveSpecification:
+        AttributeName: expirationTime
+        Enabled: true
+
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: 
+        Ref: Environment
+      Variables:
+        Environment: 
+          Ref: Environment
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./swagger.yaml
+
+  ApiMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      - ServerlessRestApiStage
+    Properties:
+      DomainName:
+        Fn::ImportValue:
+          !Sub "${Environment}-ApiGatewayDomainName"
+      RestApiId: 
+        Ref: ServerlessRestApi
+      Stage: 
+        Ref: Environment
+      BasePath: 
+        Ref: BasePath
+
+  AddSubscription:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/subscribe
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+
+  AddSubscriptionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: AddSubscription.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: 
+        Fn::Sub: "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/POST/subscribe"
+
+  Publish:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/publish
+      Role:
+        Fn::ImportValue:
+          Fn::Sub: ${Environment}-MotorNotificacionesRole
+
+  PublishPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: Publish.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: 
+        Fn::Sub: "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/POST/publish"
+
+  NotificacionesConnectWS:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/NotificacionesConnectWS
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      Environment:
+        Variables:
+          BasePath: 
+            Ref: BasePath
+          BasePathWithAuth:
+            Ref: BasePathWithAuth
+
+  NotificacionesConnectWSPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: NotificacionesConnectWS.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+
+  NotificacionesDisconnectWs:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/NotificacionesDisconnectWs
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+
+  NotificacionesDisconnectWsPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: NotificacionesDisconnectWs.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+
+  ApiWebSocketNotificaiones:
+    Type: 'AWS::ApiGatewayV2::Api'
+    Properties:
+      Name: 
+        Fn::Join: ["-", [Ref: Environment, "MotorNotificacionesWebSocket"]]
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: "$request.body.action"
+
+  ApiWebSocketNotificacionesIAMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn:
+      - StageApiWebSocket
+    Properties:
+      ApiId:
+        Ref: ApiWebSocketNotificaiones
+      ApiMappingKey:
+        Ref: BasePath
+      DomainName:
+        Fn::ImportValue:
+          !Sub "${Environment}-ApiGatewayWSHostName"
+      Stage:
+        Ref: Environment
+
+  ConnectInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiWebSocketNotificaiones
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${NotificacionesConnectWS.Arn}/invocations
+
+  connectWebsocketsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    DependsOn:
+      - ConnectInteg
+    Properties:
+      ApiId: 
+        Ref: ApiWebSocketNotificaiones
+      RouteKey: $connect
+      OperationName: NotificacionesConnectWS
+      AuthorizationType: AWS_IAM
+      Target: 
+        Fn::Join: 
+          - '/'
+          - - 'integrations'
+            - Ref: ConnectInteg
+
+  DisconnectInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: 
+        Ref: ApiWebSocketNotificaiones
+      Description: Disconnect Integracion
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${NotificacionesDisconnectWs.Arn}/invocations
+
+  disconnectWebsocketsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiWebSocketNotificaiones
+      RouteKey: $disconnect
+      Target: 
+        Fn::Join:
+          - '/'
+          - - 'integrations'
+            - Ref: DisconnectInteg
+
+  DeploymentApiWebSocket:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+      - connectWebsocketsRoute
+      - disconnectWebsocketsRoute
+    Properties:
+      ApiId:
+        Ref: ApiWebSocketNotificaiones
+
+  StageApiWebSocket:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName:
+        Ref: Environment
+      ApiId:
+        Ref: ApiWebSocketNotificaiones
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 2
+        ThrottlingRateLimit: 5
+      DeploymentId:
+        Ref: DeploymentApiWebSocket
+      StageVariables:
+        ENV:
+          Ref: Environment
+
+ ##EVENT BUS MOTOR DE NOTIFICACIONES
+
+  MotorNotificacionesEventBus: 
+    Type: AWS::Events::EventBus
+    Properties: 
+        Name: 
+          Fn::Sub: "${Environment}-MotorNotificacionesEventBus"
+
+  ## AUTHORIZER AD 
+  AuthorizerWS:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      MemorySize: 256
+      Timeout: 30
+      CodeUri: ../functions/Authorizer
+      Environment:
+        Variables:
+          TABLE_CONFIG:
+            Fn::ImportValue: !Sub "${Environment}-AuthConfigTable-V3"
+
+  AuthorizerWSLogGroup:
+    Type: "AWS::Logs::LogGroup"
+    DependsOn: "AuthorizerWS"
+    Properties:
+      RetentionInDays: 30
+      LogGroupName: !Join ["", ["/aws/lambda/", !Ref AuthorizerWS]]
+
+  NotificacionesConnectAuthWS:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/NotificacionesConnectWS
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      Environment:
+        Variables:
+          BasePath: 
+            Ref: BasePath
+          BasePathWithAuth:
+            Ref: BasePathWithAuth
+
+  NotificacionesConnectAuthWSPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: NotificacionesConnectAuthWS.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+
+  NotificacionesDisconnectAuthWs:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ../functions/NotificacionesDisconnectWs
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+
+  NotificacionesDisconnectAuthWsPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: NotificacionesDisconnectAuthWs.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+
+  ## API WEBSOCKET CON AUTENTICACION POR CUSTOM AUTHORIZER
+  ApiAuthWebSocketNotificaciones:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name:
+        Fn::Join:
+        - '-'
+        - - Ref: Environment
+          - MotorNotificacionesAuthWebSocket
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: "$request.body.action"
+  
+  ApiWebSocketAuth:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      Name: AuthorizerWs
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      AuthorizerType: REQUEST
+      AuthorizerCredentialsArn:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      AuthorizerUri:
+        Fn::Join:
+          - ""
+          - - Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/"
+            - Fn::Sub: ${AuthorizerWS.Arn}
+            - Fn::Sub: "/invocations"
+      IdentitySource:
+        - route.request.querystring.Authorization
+  ConnectAuthInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${NotificacionesConnectAuthWS.Arn}/invocations
+  ConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    DependsOn:
+    - ConnectAuthInteg
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      RouteKey: $connect
+      OperationName: NotificacionesConnectAuthWS
+      AuthorizationType: CUSTOM
+      AuthorizerId:
+        Ref: ApiWebSocketAuth
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: ConnectAuthInteg
+  DisconnectAuthInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      Description: Disconnect Integracion
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${NotificacionesDisconnectAuthWs.Arn}/invocations
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      RouteKey: $disconnect
+      AuthorizerId:
+        Ref: ApiWebSocketAuth
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: DisconnectAuthInteg
+  DeploymentApiAuthWebSocket:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+    - ConnectRoute
+    - DisconnectRoute
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+  StageApiAuthWebSocket:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName:
+        Ref: Environment
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 2
+        ThrottlingRateLimit: 5
+      DeploymentId:
+        Ref: DeploymentApiAuthWebSocket
+      StageVariables:
+        ENV:
+          Ref: Environment
+  ApiWebSocketNotificaionesMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn:
+      - StageApiAuthWebSocket
+    Properties:
+      ApiId:
+        Ref: ApiAuthWebSocketNotificaciones
+      ApiMappingKey:
+        Ref: BasePathWithAuth
+      DomainName:
+        Fn::ImportValue:
+          !Sub "${Environment}-ApiGatewayWSHostName"
+      Stage:
+        Ref: Environment
+
+  ## FUNCTION QUE RECIBE STREAM DE MOTOR DE TRAMITES
+  ProcessDynamoDBRecords:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      MemorySize: 256
+      Timeout: 30
+      CodeUri: ../functions/ProcessDynamoDBRecords
+      Events:
+        DDBEvent:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              Fn::ImportValue:
+                !Sub "${Environment}-TramitesStreamArn"
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 10
+            Enabled: true
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: 
+            Ref: MotorNotificacionesEventBus
+
+  ProcessDynamoDBRecordsGroup:
+    Type: "AWS::Logs::LogGroup"
+    DependsOn: "ProcessDynamoDBRecords"
+    Properties:
+      RetentionInDays: 30
+      LogGroupName: !Join ["", ["/aws/lambda/", !Ref ProcessDynamoDBRecords]]
+
+  PublishWSPrivate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role:
+        Fn::ImportValue:
+          !Sub ${Environment}-MotorNotificacionesRole
+      MemorySize: 256
+      Timeout: 30
+      CodeUri: ../functions/publishPrivate
+
+  PublishWSPriPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: 
+        Fn::GetAtt: PublishWSPrivate.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: 
+        Fn::Sub: "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/POST/publish"
+
+  PublishWSPrivateGroup:
+    Type: "AWS::Logs::LogGroup"
+    DependsOn: "PublishWSPrivate"
+    Properties:
+      RetentionInDays: 30
+      LogGroupName: !Join ["", ["/aws/lambda/", !Ref PublishWSPrivate]]
+
+  EventRuleSendWS: 
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName:
+        Ref: MotorNotificacionesEventBus  
+      Description: "Envia Notificaciones de Motor de Tramites"
+      EventPattern: 
+        source: 
+          - tramites.dynamodb
+        detail-type:
+          - MOTOR DE TRAMITES
+        detail: 
+          proceso: 
+            - 'ATC'
+          action:
+            - INSERT
+            - MODIFY
+      State: "ENABLED"
+      Targets: 
+        - 
+          Arn: 
+            Fn::GetAtt: 
+              - "PublishWSPrivate"
+              - "Arn"
+          Id: "PublishWSPrivateTarget"
+
+  PermissionForEventsToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: 
+        Ref: "PublishWSPrivate"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: 
+        Fn::GetAtt: 
+          - "EventRuleSendWS"
+          - "Arn"
+
+Outputs:
+  RestApiOutput:
+    Description: "Rest Api Id"
+    Value:
+      Ref: ServerlessRestApi
+    Export:
+      Name: 
+        Fn::Join: ["-", [Ref: Environment, 'RestApiNotificaciones']]
+  WsApiOutput:
+    Description: "Websocket Api Id"
+    Value:
+      Ref: ApiWebSocketNotificaiones
+    Export:
+      Name: 
+        Fn::Join: ["-", [Ref: Environment, 'WsApiNotificaciones']]
+  WsApiAuthOutput:
+    Description: "Websocket Auth Api Id"
+    Value:
+      Ref: ApiAuthWebSocketNotificaciones
+    Export:
+      Name: 
+        Fn::Join: ["-", [Ref: Environment, 'WsApiAuthNotificaciones']]

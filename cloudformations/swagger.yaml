@@ -1,0 +1,233 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title:
+    Fn::Sub: ${Environment}-MotorNotificacionesPush"
+schemes:
+  - "https"
+x-amazon-apigateway-documentation:
+  version: 0.1
+  documentationParts:
+    - location:
+        type: API
+      properties:
+        description: Notificaciones
+        info:
+          description: Api para interactuar con notificaciones para clientes push
+          version: 0.1
+
+paths:
+  /subscribe:
+    post:
+      description: Adds a subscription for the calling user of for the user indicated in the parameters
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: subscription
+          in: body
+          description: Adds a subscription for the calling user of for the user indicated in the parameters
+          schema:
+            $ref: "#/definitions/Subscription"
+      x-amazon-apigateway-auth:
+        type: aws_iam
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddSubscription.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Subscription"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        passthroughBehavior: "when_no_match"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        type: "mock"
+  /publish:
+    post:
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: message
+          in: body
+          description: The message to publish
+          schema:
+            $ref: "#/definitions/Message"
+      x-amazon-apigateway-auth:
+        type: aws_iam
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Publish.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Message"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        passthroughBehavior: "when_no_match"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        type: "mock"
+
+definitions:
+  Subscription:
+    properties:
+      topic:
+        type: string
+        description: >-
+          The topic you want to publish to.<br>
+          If the topic is an application topic subscriptor is mandatory
+      channel:
+        type: string
+        enum:
+          - fcm-expo
+          - apn-expo
+        description: "Protocol for the subscription. Example: fcm-expo"
+      endpoint:
+        type: string
+        description: "Endpoint where the notifications will be sent, it depends on the protocol.  Example: https://subscriber.com/notifications"
+      format:
+        type: string
+        enum:
+          - expo
+        description: "The format used to send the notification"
+      filter:
+        type: object
+        description: "A filter to be applied to the subscription"
+      subscriber:
+        type: string
+        description: "Username of the subscription, it will be used in case the subscription is being created for other user, otherwise it is taken from the credentials of the current user. Example:  user@tenant1.com"
+      subscription_id:
+        type: string
+        description: "Subscription id generated by the server. Example:  04253436-a701-4be0-9fa4-5a913f165803"
+
+    required:
+      - channel
+      - topic
+  Message:
+    properties:
+      topic:
+        type: string
+      subscriber:
+        type: string
+      message:
+        type: string
+      subject:
+        type: string
+    required:
+      - topic
+      - subscriber
+      - message
+      - subject
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+
+# securityDefinitions:
+#   LambdaAuth:
+#     type: "apiKey"
+#     name: "Authorization"
+#     in: "header"
+#     x-amazon-apigateway-authtype: "custom"
+#     x-amazon-apigateway-authorizer:
+#       authorizerUri:
+#         Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:devAUTHORIZER_JWT_AUTHORIZER/invocations"
+#       identitySource: "method.request.header.Authorization"
+#       type: "request"

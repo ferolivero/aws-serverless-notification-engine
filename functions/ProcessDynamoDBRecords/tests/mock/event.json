@@ -1,0 +1,67 @@
+{
+  "body": "{\r\n    \"subscriber\": \"agente1@hcc.care\",\r\n    \"topic\": \"ATC\",\r\n    \"message\": {\r\n        \"notification\": {\r\n            \"title\": \"Licencia aprobada\",\r\n            \"body\": \"Su licencia 123 ha sido aprobada\",\r\n            \"message\": \"hola\",\r\n            \"tag\": \"asd\",\r\n            \"experienceId\": \"@gpisacco\/hcc-licencias-mobile\"\r\n        },\r\n        \"data\": {\r\n            \"notificationId\": -123323,\r\n            \"title\": \"Licencia aprobada\",\r\n            \"subtitle\": \"asd\",\r\n            \"body\": \"{\\\"circuit_id\\\":\\\"4514af49-4fba-4d24-9240-d5e387d33b43\\\"}\",\r\n            \"message\": \"Hola\",\r\n            \"tag\": \"asd\",\r\n            \"actionId\": null,\r\n            \"remote\": true,\r\n            \"isMultiple\": false,\r\n            \"userText\": null,\r\n            \"experienceId\": \"@gpisacco\/hcc-licencias-mobile\",\r\n            \"data\": null,\r\n            \"sound\": \"default\"\r\n        }\r\n    }\r\n}",
+  "resource": "/{proxy+}",
+  "path": "/path/to/resource",
+  "httpMethod": "POST",
+  "isBase64Encoded": false,
+  "queryStringParameters": {
+    "foo": "bar"
+  },
+  "pathParameters": {
+    "proxy": "/path/to/resource"
+  },
+  "stageVariables": {
+    "Environment": "messageHubDev"
+  },
+  "headers": {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, sdch",
+    "Accept-Language": "en-US,en;q=0.8",
+    "Cache-Control": "max-age=0",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "US",
+    "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Custom User Agent String",
+    "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "cDehVQoZnx43VYQb9j2-nvCh-9z396Uhbp027Y2JvkCPNLmGJHqlaA==",
+    "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "requestContext": {
+    "authorizer": {
+      "credentials": "{\"username\":\"agente2@hcc.care\",\"roles\":[\"COMERCIOS_SUCURSAL_OFICIAL\"],\"tenant\":\"hcc\"}",
+      "principalId": "gaston@btekstudio1.onmicrosoft.com",
+      "protocols": "[{\"resource\":\"circuit_engine:/status\",\"actions\":[\"GET\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/status\",\"actions\":[\"POST\"],\"effect\":\"deny\"},{\"resource\":\"circuit_engine:/circuits/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\",\"conditions\":[{\"ForAnyValue:StringEquals\":{\"assignedToGroup\":\"group1\",\"createdByGroup\":\"group1\"}}],\"views\":{\"view1\":{\"default\":true,\"fields\":{\"attachments\":true,\"circuitId\":false,\"creditCard\":\"#mask\"}}},\"factors\":{\"mfa\":{\"require\":true},\"sourceIp\":{\"IpAddress\":\"200.0.0.2/14\",\"NotIpAddress\":\"2.3.3.3/12\"}}},{\"resource\":\"circuit_engine:/circuits\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\",\"conditions\":[{\"ForAnyValue:StringEquals\":{\"assignedToGroup\":\"group1\",\"createdByGroup\":\"group1\"}}],\"views\":{\"view1\":{\"default\":true,\"fields\":{\"attachments\":true,\"circuitId\":false,\"creditCard\":\"#mask\"}}},\"factors\":{\"mfa\":{\"require\":true},\"sourceIp\":{\"IpAddress\":\"200.0.0.2/14\",\"NotIpAddress\":\"2.3.3.3/12\"}}},{\"resource\":\"circuit_engine:/tasks/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/tasks\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\",\"conditions\":[{\"ForAnyValue:StringEquals\":{\"assignedToGroup\":\"group1\",\"createdByGroup\":\"group1\"}}],\"views\":{\"view1\":{\"default\":true,\"fields\":{\"attachments\":true,\"circuitId\":false,\"creditCard\":\"#mask\"}}},\"factors\":{\"mfa\":{\"require\":true},\"sourceIp\":{\"IpAddress\":\"200.0.0.2/14\",\"NotIpAddress\":\"2.3.3.3/12\"}}},{\"resource\":\"circuit_engine:/task_definitions/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\"},{\"resource\":\"circuit_engine:/circuit_definitions/*\",\"actions\":[\"GET\",\"POST\",\"PATCH\",\"PUT\",\"OPTIONS\"],\"effect\":\"allow\",\"views\":{}, \"conditions\":[{\"ForAnyValue:StringEquals\":{\"assignedToGroup\":\"group1\",\"createdByGroup\":\"group1\"}}]}]"
+    },
+    "accountId": "123456789012",
+    "resourceId": "123456",
+    "stage": "prod",
+    "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
+    "requestTime": "09/Apr/2015:12:34:56 +0000",
+    "requestTimeEpoch": 1428582896000,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "accessKey": null,
+      "sourceIp": "127.0.0.1",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "Custom User Agent String",
+      "user": null
+    },
+    "path": "/prod/path/to/resource",
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "POST",
+    "apiId": "1234567890",
+    "protocol": "HTTP/1.1"
+  }
+}
